@@ -20,7 +20,8 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.post('/asisten', upload.single('file'), async (req, res) => { // Pastikan 'file' sesuai dengan nama field di FormData
+app.post('/asisten', upload.single('file'), async (req, res) => { 
+    // Pastikan 'file' sesuai dengan nama field di FormData
     if (req.fileValidationError) {
         return res.status(400).json({ error: req.fileValidationError });
     }
@@ -36,6 +37,13 @@ app.post('/asisten', upload.single('file'), async (req, res) => { // Pastikan 'f
         res.json({ ok: true, text: roast }); // Pastikan respons memiliki format yang benar
     } catch (error) {
         console.error('Roasting error:', error); // Log error
+
+        // Menangani error 504 jika terjadi timeout atau error lainnya
+        if (error.code === 'ETIMEDOUT' || error.message.includes('timeout')) {
+            return res.status(504).json({ error: 'Request timeout, please try again later.' });
+        }
+        
+        // Menangani error umum lainnya
         res.status(500).json({ error: 'Internal server error: ' + error.message });
     }
 });
