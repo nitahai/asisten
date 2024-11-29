@@ -38,12 +38,16 @@ app.get('/', (req, res) => {
         console.error('Roasting error:', error);
 
         // Menangani error 504 (timeout) jika proses memakan waktu lama
-        if (error.message.includes('timeout')) {
-            return res.status(504).json({ error: 'Maaf, sedang error. Silakan coba lagi nanti.' });
+        if (error.message.includes('timeout') || error.code === 'ETIMEDOUT') {
+            return res.status(504).json({
+                error: 'Maaf, sedang error. Silakan coba lagi nanti.'
+            });
         }
 
         // Menangani error lainnya
-        res.status(500).json({ error: 'Internal server error: ' + error.message });
+        return res.status(500).json({
+            error: 'Internal server error: ' + error.message
+        });
     }
 });
 
