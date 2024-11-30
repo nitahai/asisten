@@ -66,6 +66,16 @@ app.post('/asisten', upload.single('file'), async (req, res, next) => {
     }
 });
 
+// Middleware untuk menangani status 504 Gateway Timeout
+app.use((req, res, next) => {
+    res.on('finish', () => {
+        if (res.statusCode === 504) {
+            res.json({ error: 'Gateway Timeout', message: 'The server took too long to respond. Please try again later.' });
+        }
+    });
+    next();
+});
+
 // Global error handler
 app.use((err, req, res, next) => {
     console.error('Unhandled error:', err.message);
