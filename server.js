@@ -3,18 +3,18 @@ import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { getRoast } from './asisten.js';
-import cors from 'cors'; // Import cors
+import cors from 'cors';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const upload = multer({ dest: '/tmp/uploads/', limits: { fileSize: 6 * 1024 * 1024 } }); // Temp directory & 6MB limit
+const upload = multer({ dest: '/tmp/uploads/', limits: { fileSize: 6 * 1024 * 1024 } });
 
 // Use CORS middleware
 app.use(cors());
 
-// Serve static files (HTML, CSS, JS, etc.)
+// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Home route
@@ -48,10 +48,10 @@ app.post('/asisten', upload.single('file'), async (req, res, next) => {
 
         // Proses roasting
         const roast = await getRoast(req.file);
-        clearTimeout(timeout);
+        clearTimeout(timeout); // Clear timeout jika berhasil
         res.json({ ok: true, text: roast });
     } catch (error) {
-        clearTimeout(timeout);
+        clearTimeout(timeout); // Clear timeout jika terjadi kesalahan
         console.error('Roasting error:', error);
 
         // Tangani khusus error timeout
