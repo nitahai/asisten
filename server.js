@@ -27,7 +27,7 @@ app.post('/asisten', upload.single('file'), async (req, res, next) => {
     // Timeout handler: Set limit to 10 seconds
     const timeout = setTimeout(() => {
         res.status(504).json({ error: 'Request timed out. Please try again later.' });
-    }, 10000); // 10 detik
+    }, 5000); // 10 detik
 
     try {
         // Validasi file upload
@@ -66,16 +66,6 @@ app.post('/asisten', upload.single('file'), async (req, res, next) => {
     }
 });
 
-// Middleware untuk menangani status 504 Gateway Timeout
-app.use((req, res, next) => {
-    res.on('finish', () => {
-        if (res.statusCode === 504) {
-            res.json({ error: 'Gateway Timeout', message: 'The server took too long to respond. Please try again later.' });
-        }
-    });
-    next();
-});
-
 // Global error handler
 app.use((err, req, res, next) => {
     console.error('Unhandled error:', err.message);
@@ -83,6 +73,17 @@ app.use((err, req, res, next) => {
         error: 'Internal server error',
         message: err.message
     });
+});
+
+// Middleware untuk menangani status 504 Gateway Timeout jika belum ter-handle
+app.use((req, res, next) => {
+    res.on('finish', () => {
+        // Jika status code adalah 504, kirimkan respons JSON
+        if (res.statusCode === 504) {
+            res.json({ error: 'Gateway Timeout', message: 'The server took too long to respond. Please try again later.' });
+        }
+    });
+    next();
 });
 
 // Jalankan server
