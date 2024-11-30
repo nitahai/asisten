@@ -27,7 +27,7 @@ app.post('/asisten', upload.single('file'), async (req, res, next) => {
     // Timeout handler: Set limit to 10 seconds
     const timeout = setTimeout(() => {
         res.status(504).json({ error: 'Request timed out. Please try again later.' });
-    }, 5000); // 10 detik
+    }, 10000); // 10 detik
 
     try {
         // Validasi file upload
